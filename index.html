@@ -283,26 +283,92 @@
             allPrefs[pref] = (allPrefs[pref] || 0) + 1;
           });
         });
-        const sorted = Object.entries(allPrefs)
-          .sort((a, b) => b[1] - a[1]);
+        const sorted = Object.entries(allPrefs).sort((a, b) => b[1] - a[1]);
         const labels = sorted.map((x) => x[0]);
         const values = sorted.map((x) => x[1]);
 
         const modal = document.getElementById("chartModal");
         modal.classList.remove("hidden");
+
+        // --- Chart.js Bar Chart ---
         const ctx = document.getElementById("tercihChart").getContext("2d");
-        // destroy existing charts if any
-        if (window._tercihChartInstance) {
-          window._tercihChartInstance.destroy();
-        }
+        if (window._tercihChartInstance) window._tercihChartInstance.destroy();
         window._tercihChartInstance = new Chart(ctx, {
           type: "bar",
           data: {
             labels,
-            datasets: [{ label: "En Çok Tercih Edilen İller", data: values }],
+            datasets: [{
+              label: "En Çok Tercih Edilen İller",
+              data: values,
+              backgroundColor: "rgba(34, 211, 238, 0.6)",
+              borderColor: "rgba(34, 211, 238, 1)",
+              borderWidth: 1,
+            }],
           },
-          options: { scales: { y: { beginAtZero: true } } },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } },
+          },
         });
+
+        // --- ECharts Türkiye Haritası ---
+        const mapDom = document.getElementById("turkiyeMap");
+        const mapChart = echarts.init(mapDom);
+
+        // Türkiye haritası geo verisi (ECharts resmi kaynak)
+        fetch("tr.geojson")
+          .then((res) => res.json())
+          .then((turkeyJson) => {
+
+            const geoNames = turkeyJson.features.map((f) =>
+              f.properties.name
+            );
+
+            // Verilerdeki şehir adlarını da aynı şekilde normalize et
+            const data = Object.keys(allPrefs).map((sehir) => {
+              const normalized = sehir;
+              // GeoJSON içinde eşleşen ismi bul
+              const matchedName =
+                geoNames.find((g) => g.includes(normalized) || normalized.includes(g)) ||
+                sehir;
+              return { name: matchedName, value: allPrefs[sehir] };
+            });
+
+
+            echarts.registerMap("TURKEY", turkeyJson);
+
+            const option = {
+              tooltip: {
+                trigger: "item",
+                formatter: (p) => {
+                  return `${p.name}: ${p.value || 0} tercih`; 
+                },
+              },
+              visualMap: {
+                left: "right",
+                min: 0,
+                max: Math.max(...values) || 1,
+                inRange: { color: ["#55ff78", "#f1dd38", "#ff7f00", "#ff5578"] },
+                text: ["Fazla", "Az"],
+                calculable: true,
+                textStyle: { color: "#fff" },
+              },
+              series: [
+                {
+                  name: "Tercih Sayısı",
+                  type: "map",
+                  map: "TURKEY",
+                  roam: true,
+                  emphasis: { label: { show: true } },
+                  data,
+                },
+              ],
+            };
+
+
+            mapChart.setOption(option);
+            window.addEventListener("resize", () => mapChart.resize());
+          });
       }
 
       // modal close
@@ -631,23 +697,27 @@
   <!-- dış scriptler (excel, chart) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 
-  <!-- Chart modal markup (sayfanın sonuna koydum) -->
-  <!-- Chart modal markup -->
+
   <div id="chartModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex justify-center items-center z-50 p-4">
     <div
-      class="bg-gray-800 p-6 sm:p-8 rounded-2xl w-full max-w-3xl relative shadow-2xl transform transition-all scale-100">
+      class="bg-gray-800 p-6 sm:p-8 rounded-2xl w-full max-w-6xl relative shadow-2xl transform transition-all scale-100">
       <button id="closeChart" class="absolute top-3 right-3 text-gray-400 hover:text-white text-lg">
         ✕
       </button>
       <h2 class="text-xl sm:text-2xl font-semibold text-center text-cyan-400 mb-4">
         En Çok Tercih Edilen İller
       </h2>
-      <div class="w-full overflow-x-auto">
-        <canvas id="tercihChart" class="w-full h-64 sm:h-80"></canvas>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="w-full overflow-x-auto">
+          <canvas id="tercihChart" class="w-full h-64 sm:h-80"></canvas>
+        </div>
+        <div id="turkiyeMap" class="w-full h-64 sm:h-80 rounded-lg"></div>
       </div>
     </div>
   </div>
+
 
 </body>
 
