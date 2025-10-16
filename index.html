@@ -1,303 +1,525 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tercih Robotu</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1f2937;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4b5563;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
-        }
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      /* Custom scrollbar for better aesthetics */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1f2937;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #4b5563;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+      }
     </style>
-</head>
-<body class="bg-gray-900 text-white antialiased">
-
+  </head>
+  <body class="bg-gray-900 text-white antialiased">
     <div class="container mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">
-        <div class="bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8">
-            <header class="text-center mb-8">
-                <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400">Tercih Robotu</h1>
-                <p class="text-gray-400 mt-2">Bilgilerinizi girin, tercihlerinizi yapın ve atama sonuçlarını görüntüleyin.</p>
-            </header>
+      <div class="bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8">
+        <header class="text-center mb-8">
+          <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400">
+            Tercih Robotu
+          </h1>
+          <p class="text-gray-400 mt-2">
+            Bilgilerinizi girin, tercihlerinizi yapın ve atama sonuçlarını
+            görüntüleyin.
+          </p>
+        </header>
 
-            <!-- User Input Form -->
-            <form id="tercihForm" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label for="ad" class="block mb-2 text-sm font-medium text-gray-300">Ad</label>
-                        <input type="text" id="ad" name="ad" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 placeholder-gray-400" placeholder="Adınız" required>
-                    </div>
-                    <div>
-                        <label for="soyad" class="block mb-2 text-sm font-medium text-gray-300">Soyad</label>
-                        <input type="text" id="soyad" name="soyad" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 placeholder-gray-400" placeholder="Soyadınız" required>
-                    </div>
-                    <div>
-                        <label for="siralama" class="block mb-2 text-sm font-medium text-gray-300">Sıralama</label>
-                        <input type="number" id="siralama" name="siralama" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 placeholder-gray-400" placeholder="Sıralamanız (örn: 1234)" required>
-                    </div>
-                </div>
-
-                <!-- City Preferences -->
-                <div>
-                    <h2 class="text-xl font-semibold mb-4 text-gray-200">Şehir Tercihleri (1-40)</h2>
-                    <div id="tercihListesi" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        <!-- Preference selects will be generated here by JS -->
-                    </div>
-                </div>
-
-                <!-- 41st Preference Checkbox -->
-                <div class="flex items-center mt-6">
-                    <input id="tercih41" name="tercih41" type="checkbox" class="w-5 h-5 text-cyan-600 bg-gray-700 border-gray-600 rounded focus:ring-cyan-500 focus:ring-offset-gray-800">
-                    <label for="tercih41" class="ml-3 text-sm font-medium text-gray-300">41. tercihi (boşta kalan herhangi bir kadro) yapmak istiyorum.</label>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                    <button type="submit" class="w-full sm:w-auto text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-800 font-medium rounded-lg text-sm px-8 py-3 text-center transition-colors duration-200">
-                        Kaydet
-                    </button>
-                    <button type="button" id="atamaYapBtn" class="w-full sm:w-auto text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-800 font-medium rounded-lg text-sm px-8 py-3 text-center transition-colors duration-200">
-                        Atamayı Yap
-                    </button>
-                     <button type="button" id="temizleBtn" class="w-full sm:w-auto text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-800 font-medium rounded-lg text-sm px-8 py-3 text-center transition-colors duration-200">
-                        Tüm Verileri Temizle
-                    </button>
-                </div>
-            </form>
-            
-            <div id="toast-message" class="hidden fixed top-5 right-5 flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+        <!-- User Input Form -->
+        <form id="tercihForm" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label
+                for="ad"
+                class="block mb-2 text-sm font-medium text-gray-300"
+                >Ad</label
+              >
+              <input
+                type="text"
+                id="ad"
+                name="ad"
+                class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 placeholder-gray-400"
+                placeholder="Adınız"
+                required
+              />
             </div>
-
-            <!-- Results Section -->
-            <div id="sonuclar" class="mt-12">
-                <h2 class="text-2xl font-semibold mb-4 text-center text-gray-200">Atama Sonuçları</h2>
-                <div id="sonucTablosu" class="overflow-x-auto relative shadow-md sm:rounded-lg">
-                    <!-- Results table will be generated here by JS -->
-                     <p class="text-gray-500 text-center">Henüz atama yapılmadı.</p>
-                </div>
+            <div>
+              <label
+                for="soyad"
+                class="block mb-2 text-sm font-medium text-gray-300"
+                >Soyad</label
+              >
+              <input
+                type="text"
+                id="soyad"
+                name="soyad"
+                class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 placeholder-gray-400"
+                placeholder="Soyadınız"
+                required
+              />
             </div>
+            <div>
+              <label
+                for="siralama"
+                class="block mb-2 text-sm font-medium text-gray-300"
+                >Sıralama</label
+              >
+              <input
+                type="number"
+                id="siralama"
+                name="siralama"
+                class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 placeholder-gray-400"
+                placeholder="Sıralamanız (örn: 1234)"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- City Preferences -->
+          <div>
+            <h2 class="text-xl font-semibold mb-4 text-gray-200">
+              Şehir Tercihleri (1-40)
+            </h2>
+            <div
+              id="tercihListesi"
+              class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+            >
+              <!-- Preference selects will be generated here by JS -->
+            </div>
+          </div>
+
+          <!-- 41st Preference Checkbox -->
+          <div class="flex items-center mt-6">
+            <input
+              id="tercih41"
+              name="tercih41"
+              type="checkbox"
+              class="w-5 h-5 text-cyan-600 bg-gray-700 border-gray-600 rounded focus:ring-cyan-500 focus:ring-offset-gray-800"
+            />
+            <label for="tercih41" class="ml-3 text-sm font-medium text-gray-300"
+              >41. tercihi (boşta kalan herhangi bir kadro) yapmak
+              istiyorum.</label
+            >
+          </div>
+
+          <!-- Action Buttons -->
+          <div
+            class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+          >
+            <button
+              type="submit"
+              class="w-full sm:w-auto text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-800 font-medium rounded-lg text-sm px-8 py-3 text-center transition-colors duration-200"
+            >
+              Kaydet
+            </button>
+            <button
+              type="button"
+              id="atamaYapBtn"
+              class="w-full sm:w-auto text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-800 font-medium rounded-lg text-sm px-8 py-3 text-center transition-colors duration-200"
+            >
+              Atamayı Yap
+            </button>
+            <button
+              type="button"
+              id="temizleBtn"
+              class="w-full sm:w-auto text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-800 font-medium rounded-lg text-sm px-8 py-3 text-center transition-colors duration-200"
+            >
+              Tüm Verileri Temizle
+            </button>
+          </div>
+        </form>
+
+        <div
+          id="toast-message"
+          class="hidden fixed top-5 right-5 flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+          role="alert"
+        ></div>
+
+        <!-- Results Section -->
+        <div id="sonuclar" class="mt-12">
+          <h2 class="text-2xl font-semibold mb-4 text-center text-gray-200">
+            Atama Sonuçları
+          </h2>
+          <div
+            id="sonucTablosu"
+            class="overflow-x-auto relative shadow-md sm:rounded-lg"
+          >
+            <!-- Results table will be generated here by JS -->
+            <p class="text-gray-500 text-center">Henüz atama yapılmadı.</p>
+          </div>
         </div>
+      </div>
     </div>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyDMm0mG1WG8mysaYxvGuX2Dj6W3XAy_o70",
+
+        authDomain: "bt-tercih.firebaseapp.com",
+
+        databaseURL: "https://bt-tercih-default-rtdb.firebaseio.com",
+
+        projectId: "bt-tercih",
+
+        storageBucket: "bt-tercih.firebasestorage.app",
+
+        messagingSenderId: "308852832889",
+
+        appId: "1:308852832889:web:5516509352c49792fa72a8",
+      };
+
+      const app = firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
         // Defined list of cities and their quotas
         const sehirler = [
-            "Adıyaman", "Ağrı", "Ardahan", "Artvin", "Batman", "Bayburt", "Bingöl", "Bitlis",
-            "Çankırı", "Diyarbakır", "Elazığ", "Erzincan", "Erzurum", "Gaziantep", "Giresun",
-            "Gümüşhane", "Hakkari", "Hatay", "Iğdır", "İstanbul", "Kahramanmaraş", "Kars",
-            "Kastamonu", "Kayseri", "Kırşehir", "Kilis", "Malatya", "Mardin", "Muş", "Nevşehir",
-            "Niğde", "Ordu", "Rize", "Siirt", "Sivas", "Şanlıurfa", "Şırnak", "Tokat", "Tunceli",
-            "Van", "Yozgat"
+          "Adıyaman",
+          "Ağrı",
+          "Ardahan",
+          "Artvin",
+          "Batman",
+          "Bayburt",
+          "Bingöl",
+          "Bitlis",
+          "Çankırı",
+          "Diyarbakır",
+          "Elazığ",
+          "Erzincan",
+          "Erzurum",
+          "Gaziantep",
+          "Giresun",
+          "Gümüşhane",
+          "Hakkari",
+          "Hatay",
+          "Iğdır",
+          "İstanbul",
+          "Kahramanmaraş",
+          "Kars",
+          "Kastamonu",
+          "Kayseri",
+          "Kırşehir",
+          "Kilis",
+          "Malatya",
+          "Mardin",
+          "Muş",
+          "Nevşehir",
+          "Niğde",
+          "Ordu",
+          "Rize",
+          "Siirt",
+          "Sivas",
+          "Şanlıurfa",
+          "Şırnak",
+          "Tokat",
+          "Tunceli",
+          "Van",
+          "Yozgat",
         ];
 
         const kontenjanlar = {
-            "İstanbul": 19, "Şanlıurfa": 7, "Hatay": 5, "Gaziantep": 4, "Diyarbakır": 4,
-            "Van": 3, "Kahramanmaraş": 3, "Erzurum": 3, "Tokat": 3, "Ordu": 2,
-            "Mardin": 2, "Yozgat": 2, "Adıyaman": 2, "Malatya": 2, "Elazığ": 2,
-            "Nevşehir": 2, "Şırnak": 2, "Kars": 2, "Kastamonu": 2, "Niğde": 2,
-            "Hakkari": 2, "Ağrı": 1, "Muş": 1, "Giresun": 1, "Sivas": 1,
-            "Kayseri": 1, "Bitlis": 1, "Siirt": 1, "Artvin": 1, "Batman": 1,
-            "Ardahan": 1, "Kırşehir": 1, "Erzincan": 1, "Çankırı": 1, "Rize": 1,
-            "Kilis": 1, "Bayburt": 1, "Gümüşhane": 1, "Tunceli": 1, "Iğdır": 1,
-            "Bingöl": 1
+          İstanbul: 19,
+          Şanlıurfa: 7,
+          Hatay: 5,
+          Gaziantep: 4,
+          Diyarbakır: 4,
+          Van: 3,
+          Kahramanmaraş: 3,
+          Erzurum: 3,
+          Tokat: 3,
+          Ordu: 2,
+          Mardin: 2,
+          Yozgat: 2,
+          Adıyaman: 2,
+          Malatya: 2,
+          Elazığ: 2,
+          Nevşehir: 2,
+          Şırnak: 2,
+          Kars: 2,
+          Kastamonu: 2,
+          Niğde: 2,
+          Hakkari: 2,
+          Ağrı: 1,
+          Muş: 1,
+          Giresun: 1,
+          Sivas: 1,
+          Kayseri: 1,
+          Bitlis: 1,
+          Siirt: 1,
+          Artvin: 1,
+          Batman: 1,
+          Ardahan: 1,
+          Kırşehir: 1,
+          Erzincan: 1,
+          Çankırı: 1,
+          Rize: 1,
+          Kilis: 1,
+          Bayburt: 1,
+          Gümüşhane: 1,
+          Tunceli: 1,
+          Iğdır: 1,
+          Bingöl: 1,
         };
-        
-        const tercihForm = document.getElementById('tercihForm');
-        const tercihListesiDiv = document.getElementById('tercihListesi');
-        const atamaYapBtn = document.getElementById('atamaYapBtn');
-        const sonucTablosuDiv = document.getElementById('sonucTablosu');
-        const temizleBtn = document.getElementById('temizleBtn');
+
+        const tercihForm = document.getElementById("tercihForm");
+        const tercihListesiDiv = document.getElementById("tercihListesi");
+        const atamaYapBtn = document.getElementById("atamaYapBtn");
+        const sonucTablosuDiv = document.getElementById("sonucTablosu");
+        const temizleBtn = document.getElementById("temizleBtn");
 
         // Function to dynamically generate 40 preference select dropdowns
         const populateTercihler = () => {
-            let innerHTML = '';
-            for (let i = 1; i <= 40; i++) {
-                innerHTML += `
+          let innerHTML = "";
+          for (let i = 1; i <= 40; i++) {
+            innerHTML += `
                     <div class="flex flex-col">
                         <label for="tercih${i}" class="mb-1 text-xs font-medium text-gray-400">Tercih ${i}</label>
                         <select id="tercih${i}" name="tercih${i}" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5">
                             <option value="" selected>---</option>
-                            ${sehirler.map(sehir => `<option value="${sehir}">${sehir} (${kontenjanlar[sehir] || 0})</option>`).join('')}
+                            ${sehirler
+                              .map(
+                                (sehir) =>
+                                  `<option value="${sehir}">${sehir} (${
+                                    kontenjanlar[sehir] || 0
+                                  })</option>`
+                              )
+                              .join("")}
                         </select>
                     </div>
                 `;
-            }
-            tercihListesiDiv.innerHTML = innerHTML;
+          }
+          tercihListesiDiv.innerHTML = innerHTML;
         };
 
         // Function to show a toast message
-        const showToast = (message, type = 'success') => {
-            const toast = document.getElementById('toast-message');
-            const colorClasses = {
-                success: {
-                    icon: '<svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/></svg>',
-                    text: 'text-green-500 dark:text-green-400',
-                    bg: 'bg-green-100 dark:bg-green-800'
-                },
-                error: {
-                    icon: '<svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"/></svg>',
-                    text: 'text-red-500 dark:text-red-400',
-                    bg: 'bg-red-100 dark:bg-red-800'
-                }
-            };
-            
-            toast.innerHTML = `
+        const showToast = (message, type = "success") => {
+          const toast = document.getElementById("toast-message");
+          const colorClasses = {
+            success: {
+              icon: '<svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/></svg>',
+              text: "text-green-500 dark:text-green-400",
+              bg: "bg-green-100 dark:bg-green-800",
+            },
+            error: {
+              icon: '<svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"/></svg>',
+              text: "text-red-500 dark:text-red-400",
+              bg: "bg-red-100 dark:bg-red-800",
+            },
+          };
+
+          toast.innerHTML = `
                 <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 ${colorClasses[type].text} ${colorClasses[type].bg} rounded-lg">
                     ${colorClasses[type].icon}
                     <span class="sr-only">${type} icon</span>
                 </div>
                 <div class="ml-3 text-sm font-normal">${message}</div>
             `;
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3000);
+          toast.classList.remove("hidden");
+          setTimeout(() => {
+            toast.classList.add("hidden");
+          }, 3000);
         };
 
         // Event handler for saving user data
-        tercihForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(tercihForm);
-            const tercihler = [];
-            for (let i = 1; i <= 40; i++) {
-                const tercih = formData.get(`tercih${i}`);
-                if (tercih) {
-                    tercihler.push(tercih);
-                }
-            }
+        tercihForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const formData = new FormData(tercihForm);
+          const tercihler = [];
 
-            const yeniKullanici = {
-                ad: formData.get('ad'),
-                soyad: formData.get('soyad'),
-                siralama: parseInt(formData.get('siralama')),
-                tercihler: tercihler,
-                tercih41: formData.get('tercih41') === 'on'
-            };
+          for (let i = 1; i <= 40; i++) {
+            const tercih = formData.get(`tercih${i}`);
+            if (tercih) tercihler.push(tercih);
+          }
 
-            const kullanicilar = JSON.parse(localStorage.getItem('kullanicilar')) || [];
-            
-            if(kullanicilar.some(k => k.siralama === yeniKullanici.siralama)) {
-                showToast('Bu sıralamada başka bir kullanıcı zaten kayıtlı!', 'error');
+          const yeniKullanici = {
+            ad: formData.get("ad"),
+            soyad: formData.get("soyad"),
+            siralama: parseInt(formData.get("siralama")),
+            tercihler,
+            tercih41: formData.get("tercih41") === "on",
+          };
+
+          // 🔹 Önce aynı sıralamaya sahip kullanıcı var mı kontrol et
+          firebase
+            .database()
+            .ref("kullanicilar")
+            .orderByChild("siralama")
+            .equalTo(yeniKullanici.siralama)
+            .once("value")
+            .then((snapshot) => {
+              if (snapshot.exists()) {
+                showToast(
+                  "Bu sıralamada başka bir kullanıcı zaten kayıtlı!",
+                  "error"
+                );
                 return;
-            }
+              }
 
-            kullanicilar.push(yeniKullanici);
-            localStorage.setItem('kullanicilar', JSON.stringify(kullanicilar));
-            
-            showToast('Kullanıcı başarıyla kaydedildi!', 'success');
-            tercihForm.reset();
+              // 🔹 Yoksa yeni kullanıcıyı ekle
+              firebase
+                .database()
+                .ref("kullanicilar")
+                .push(yeniKullanici)
+                .then(() =>
+                  showToast("Kullanıcı başarıyla kaydedildi!", "success")
+                )
+                .catch(() =>
+                  showToast("Firebase kaydı sırasında hata oluştu!", "error")
+                );
+
+              tercihForm.reset();
+            });
         });
 
         // Event handler for making placements
-        atamaYapBtn.addEventListener('click', () => {
-            const kullanicilar = JSON.parse(localStorage.getItem('kullanicilar')) || [];
+        atamaYapBtn.addEventListener("click", () => {
+          firebase
+            .database()
+            .ref("kullanicilar")
+            .once("value")
+            .then((snapshot) => {
+              const kullanicilarObj = snapshot.val() || {};
+              const kullanicilar = Object.values(kullanicilarObj);
 
-            if (kullanicilar.length === 0) {
-                showToast('Atama yapılacak kayıtlı kullanıcı bulunamadı.', 'error');
-                sonucTablosuDiv.innerHTML = '<p class="text-gray-500 text-center">Atama yapılacak kayıtlı kullanıcı bulunamadı.</p>';
+              if (kullanicilar.length === 0) {
+                showToast(
+                  "Atama yapılacak kayıtlı kullanıcı bulunamadı.",
+                  "error"
+                );
+                sonucTablosuDiv.innerHTML =
+                  '<p class="text-gray-500 text-center">Atama yapılacak kayıtlı kullanıcı bulunamadı.</p>';
                 return;
-            }
+              }
 
-            const siraliKullanicilar = kullanicilar.sort((a, b) => a.siralama - b.siralama);
+              // Buradan itibaren senin mevcut atama algoritman (sıralama, kontenjan vs)
+              const siraliKullanicilar = kullanicilar.sort(
+                (a, b) => a.siralama - b.siralama
+              );
+              const atamalar = {};
+              const sonucListesi = [];
+              const atanamayanlar41 = [];
 
-            const atamalar = {}; // { "Şehir Adı": [userObject1, userObject2] }
-            const sonucListesi = [];
-            const atanamayanlar41 = [];
-
-            // First Pass: Assign based on preferences and quotas
-            for (const kullanici of siraliKullanicilar) {
+              for (const kullanici of siraliKullanicilar) {
                 let atandi = false;
                 for (const tercihSehir of kullanici.tercihler) {
-                    const mevcutAtamaSayisi = atamalar[tercihSehir] ? atamalar[tercihSehir].length : 0;
-                    const sehirKontenjani = kontenjanlar[tercihSehir] || 0;
+                  const mevcutAtamaSayisi = atamalar[tercihSehir]
+                    ? atamalar[tercihSehir].length
+                    : 0;
+                  const sehirKontenjani = kontenjanlar[tercihSehir] || 0;
 
-                    if (tercihSehir && mevcutAtamaSayisi < sehirKontenjani) {
-                        if (!atamalar[tercihSehir]) {
-                            atamalar[tercihSehir] = [];
-                        }
-                        atamalar[tercihSehir].push(kullanici);
-                        sonucListesi.push({ kullanici: kullanici, atandigiSehir: tercihSehir });
-                        atandi = true;
-                        break;
-                    }
+                  if (tercihSehir && mevcutAtamaSayisi < sehirKontenjani) {
+                    if (!atamalar[tercihSehir]) atamalar[tercihSehir] = [];
+                    atamalar[tercihSehir].push(kullanici);
+                    sonucListesi.push({
+                      kullanici,
+                      atandigiSehir: tercihSehir,
+                    });
+                    atandi = true;
+                    break;
+                  }
                 }
-
                 if (!atandi) {
-                    if (kullanici.tercih41) {
-                        atanamayanlar41.push(kullanici);
-                    } else {
-                        sonucListesi.push({ kullanici: kullanici, atandigiSehir: 'Atanamadı' });
-                    }
+                  if (kullanici.tercih41) atanamayanlar41.push(kullanici);
+                  else
+                    sonucListesi.push({
+                      kullanici,
+                      atandigiSehir: "Atanamadı",
+                    });
                 }
-            }
-            
-            // Second Pass: Assign unplaced users with 41st preference
-            for(const kullanici of atanamayanlar41) {
-                const bosKontenjanliSehirler = sehirler.filter(s => {
-                    const mevcutAtamaSayisi = atamalar[s] ? atamalar[s].length : 0;
-                    const sehirKontenjani = kontenjanlar[s] || 0;
-                    return sehirKontenjani > 0 && mevcutAtamaSayisi < sehirKontenjani;
+              }
+
+              for (const kullanici of atanamayanlar41) {
+                const bosSehirler = sehirler.filter((s) => {
+                  const mevcut = atamalar[s] ? atamalar[s].length : 0;
+                  const kont = kontenjanlar[s] || 0;
+                  return kont > 0 && mevcut < kont;
                 });
-                
-                if (bosKontenjanliSehirler.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * bosKontenjanliSehirler.length);
-                    const atanacakSehir = bosKontenjanliSehirler[randomIndex];
-                    
-                    if (!atamalar[atanacakSehir]) {
-                        atamalar[atanacakSehir] = [];
-                    }
-                    atamalar[atanacakSehir].push(kullanici);
-                    sonucListesi.push({ kullanici: kullanici, atandigiSehir: atanacakSehir });
+                if (bosSehirler.length > 0) {
+                  const atanacakSehir =
+                    bosSehirler[Math.floor(Math.random() * bosSehirler.length)];
+                  if (!atamalar[atanacakSehir]) atamalar[atanacakSehir] = [];
+                  atamalar[atanacakSehir].push(kullanici);
+                  sonucListesi.push({
+                    kullanici,
+                    atandigiSehir: atanacakSehir,
+                  });
                 } else {
-                    const randomIndex = Math.floor(Math.random() * sehirler.length);
-                    const atanacakSehir = sehirler[randomIndex];
-                    sonucListesi.push({ kullanici: kullanici, atandigiSehir: `${atanacakSehir} (Ek Kontenjan)` });
+                  const randomSehir =
+                    sehirler[Math.floor(Math.random() * sehirler.length)];
+                  sonucListesi.push({
+                    kullanici,
+                    atandigiSehir: `${randomSehir} (Ek Kontenjan)`,
+                  });
                 }
-            }
-            
-            sonucListesi.sort((a,b) => a.kullanici.siralama - b.kullanici.siralama);
-            displaySonuclar(sonucListesi);
+              }
+
+              sonucListesi.sort(
+                (a, b) => a.kullanici.siralama - b.kullanici.siralama
+              );
+              displaySonuclar(sonucListesi);
+            });
         });
-        
+
         // Event handler for clearing all data
-        temizleBtn.addEventListener('click', () => {
-            const sifre = prompt('Verileri silmek için şifreyi girin:');
-            if (sifre === 'bt-tercih42') {
-                if (confirm('Tüm kayıtlı kullanıcı verilerini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
-                    localStorage.removeItem('kullanicilar');
-                    sonucTablosuDiv.innerHTML = '<p class="text-gray-500 text-center">Tüm veriler temizlendi.</p>';
-                    showToast('Tüm veriler başarıyla silindi.', 'success');
-                }
-            } else if (sifre !== null) {
-                showToast('Şifre yanlış!', 'error');
+        temizleBtn.addEventListener("click", () => {
+          const sifre = prompt("Verileri silmek için şifreyi girin:");
+          if (sifre === "bt-tercih42") {
+            if (
+              confirm(
+                "Tüm kayıtlı kullanıcı verilerini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+              )
+            ) {
+              firebase
+                .database()
+                .ref("kullanicilar")
+                .remove()
+                .then(() =>
+                  showToast("Tüm Firebase verileri silindi.", "success")
+                )
+                .catch(() =>
+                  showToast("Silme işleminde hata oluştu!", "error")
+                );
+
+              sonucTablosuDiv.innerHTML =
+                '<p class="text-gray-500 text-center">Tüm veriler temizlendi.</p>';
             }
+          } else if (sifre !== null) {
+            showToast("Şifre yanlış!", "error");
+          }
         });
 
         // Function to display results
         const displaySonuclar = (sonuclar) => {
-            if (sonuclar.length === 0) {
-                sonucTablosuDiv.innerHTML = '<p class="text-gray-500 text-center">Atama sonucu bulunamadı.</p>';
-                return;
-            }
-            let tableHTML = `
+          if (sonuclar.length === 0) {
+            sonucTablosuDiv.innerHTML =
+              '<p class="text-gray-500 text-center">Atama sonucu bulunamadı.</p>';
+            return;
+          }
+          let tableHTML = `
                 <table class="w-full text-sm text-left text-gray-400">
                     <thead class="text-xs uppercase bg-gray-700 text-gray-400">
                         <tr>
@@ -309,28 +531,34 @@
                     </thead>
                     <tbody>
             `;
-            sonuclar.forEach((sonuc, index) => {
-                tableHTML += `
+          sonuclar.forEach((sonuc, index) => {
+            tableHTML += `
                     <tr class="border-b bg-gray-800 border-gray-700 hover:bg-gray-600">
-                        <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap text-white">${index + 1}</th>
-                        <td class="px-6 py-4">${sonuc.kullanici.ad} ${sonuc.kullanici.soyad}</td>
+                        <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap text-white">${
+                          index + 1
+                        }</th>
+                        <td class="px-6 py-4">${sonuc.kullanici.ad} ${
+              sonuc.kullanici.soyad
+            }</td>
                         <td class="px-6 py-4">${sonuc.kullanici.siralama}</td>
-                        <td class="px-6 py-4 font-bold ${sonuc.atandigiSehir.startsWith('Atanamadı') ? 'text-red-500' : 'text-cyan-400'}">
+                        <td class="px-6 py-4 font-bold ${
+                          sonuc.atandigiSehir.startsWith("Atanamadı")
+                            ? "text-red-500"
+                            : "text-cyan-400"
+                        }">
                             ${sonuc.atandigiSehir}
                         </td>
                     </tr>
                 `;
-            });
-            tableHTML += '</tbody></table>';
-            sonucTablosuDiv.innerHTML = tableHTML;
-            showToast('Atama işlemi tamamlandı!', 'success');
+          });
+          tableHTML += "</tbody></table>";
+          sonucTablosuDiv.innerHTML = tableHTML;
+          showToast("Atama işlemi tamamlandı!", "success");
         };
 
         // Initial call to generate the form
         populateTercihler();
-    });
-</script>
-
-</body>
+      });
+    </script>
+  </body>
 </html>
-
