@@ -266,6 +266,7 @@
           Sıralama: s.kullanici.siralama,
           "Atandığı Şehir": s.atandigiSehir,
           "Kaçıncı Tercih": s.tercihSirasi || "-",
+          "41. Tercih": (s.kullanici.tercih41 ? 'Evet' : ''),
           "İlk 5 Tercih": (s.kullanici.tercihler || []).slice(0, 5).join(", "),
         }));
         const ws = XLSX.utils.json_to_sheet(data);
@@ -436,6 +437,7 @@
                             <th scope="col" class="px-6 py-3">Sıralaması</th>
                             <th scope="col" class="px-6 py-3">Atandığı Şehir</th>
                             <th scope="col" class="px-6 py-3">Kaçıncı Tercih</th>
+                            <th scope="col" class="px-6 py-3">41. Tercih</th>
                             <th scope="col" class="px-6 py-3">İlk 5 Tercihi</th>
                         </tr>
                     </thead>
@@ -451,6 +453,7 @@
                             ${sonuc.atandigiSehir}
                         </td>
                         <td class="px-6 py-4">${sonuc.tercihSirasi || "-"}</td>
+                        <td class="px-6 py-4">${sonuc.kullanici.tercih41 ? 'Evet' : ''}</td>
                         <td class="px-6 py-4 text-gray-300">${(sonuc.kullanici.tercihler || []).slice(0, 5).join(", ")}</td>
                     </tr>
                 `;
