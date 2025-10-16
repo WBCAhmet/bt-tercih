@@ -293,28 +293,55 @@
         const temizleBtn = document.getElementById("temizleBtn");
 
         // Function to dynamically generate 40 preference select dropdowns
-        const populateTercihler = () => {
-          let innerHTML = "";
+        function populateTercihler() {
+          const tercihContainer = document.getElementById("tercihler");
+          tercihContainer.innerHTML = "";
+
           for (let i = 1; i <= 40; i++) {
-            innerHTML += `
-                    <div class="flex flex-col">
-                        <label for="tercih${i}" class="mb-1 text-xs font-medium text-gray-400">Tercih ${i}</label>
-                        <select id="tercih${i}" name="tercih${i}" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5">
-                            <option value="" selected>---</option>
-                            ${sehirler
-                              .map(
-                                (sehir) =>
-                                  `<option value="${sehir}">${sehir} (${
-                                    kontenjanlar[sehir] || 0
-                                  })</option>`
-                              )
-                              .join("")}
-                        </select>
-                    </div>
-                `;
+            const select = document.createElement("select");
+            select.name = `tercih${i}`;
+            select.classList.add("w-full", "p-2", "border", "rounded", "mb-2");
+
+            const emptyOption = document.createElement("option");
+            emptyOption.value = "";
+            emptyOption.textContent = `${i}. Tercih (Boş bırakılabilir)`;
+            select.appendChild(emptyOption);
+
+            sehirler.forEach((sehir) => {
+              const option = document.createElement("option");
+              option.value = sehir;
+              const kont = kontenjanlar[sehir] || 0;
+              option.textContent = `${sehir} ${
+                kont > 0 ? `(Kontenjan: ${kont})` : "(Dolu)"
+              }`;
+              option.disabled = kont === 0; // kontenjan 0 ise seçilemez
+              select.appendChild(option);
+            });
+
+            // 🔹 Aynı şehir fazla seçilirse engelle
+            select.addEventListener("change", () => {
+              const selectedValues = Array.from(
+                tercihContainer.querySelectorAll("select")
+              ).map((s) => s.value);
+
+              sehirler.forEach((sehir) => {
+                const count = selectedValues.filter((v) => v === sehir).length;
+                const maxAllowed = kontenjanlar[sehir] || 0;
+
+                // Aynı şehir kontenjanını aştıysa son seçimi sıfırla
+                if (count > maxAllowed && maxAllowed > 0) {
+                  select.value = "";
+                  showToast(
+                    `${sehir} en fazla ${maxAllowed} kez seçilebilir!`,
+                    "error"
+                  );
+                }
+              });
+            });
+
+            tercihContainer.appendChild(select);
           }
-          tercihListesiDiv.innerHTML = innerHTML;
-        };
+        }
 
         // Function to show a toast message
         const showToast = (message, type = "success") => {
@@ -416,33 +443,31 @@
                 return;
               }
 
-              // Buradan itibaren senin mevcut atama algoritman (sıralama, kontenjan vs)
               const siraliKullanicilar = kullanicilar.sort(
                 (a, b) => a.siralama - b.siralama
               );
-              const atamalar = {};
+              const atamalar = {}; // şehir bazında listeler
               const sonucListesi = [];
               const atanamayanlar41 = [];
 
               for (const kullanici of siraliKullanicilar) {
                 let atandi = false;
-                for (const tercihSehir of kullanici.tercihler) {
-                  const mevcutAtamaSayisi = atamalar[tercihSehir]
-                    ? atamalar[tercihSehir].length
-                    : 0;
-                  const sehirKontenjani = kontenjanlar[tercihSehir] || 0;
 
-                  if (tercihSehir && mevcutAtamaSayisi < sehirKontenjani) {
-                    if (!atamalar[tercihSehir]) atamalar[tercihSehir] = [];
-                    atamalar[tercihSehir].push(kullanici);
-                    sonucListesi.push({
-                      kullanici,
-                      atandigiSehir: tercihSehir,
-                    });
-                    atandi = true;
-                    break;
-                  }
+                for (const tercihSehir of kullanici.tercihler) {
+                  const sehirKontenjani = kontenjanlar[tercihSehir] || 0;
+                  const mevcutAtamaSayisi = atamalar[tercihSehir]?.length || 0;
+
+                  if (sehirKontenjani === 0) continue; // kontenjan yoksa geç
+                  if (mevcutAtamaSayisi >= sehirKontenjani) continue; // kontenjan dolmuşsa geç
+
+                  // Atama yapılabilir
+                  if (!atamalar[tercihSehir]) atamalar[tercihSehir] = [];
+                  atamalar[tercihSehir].push(kullanici);
+                  sonucListesi.push({ kullanici, atandigiSehir: tercihSehir });
+                  atandi = true;
+                  break;
                 }
+
                 if (!atandi) {
                   if (kullanici.tercih41) atanamayanlar41.push(kullanici);
                   else
@@ -453,12 +478,14 @@
                 }
               }
 
+              // 🔹 41. tercih işleme
               for (const kullanici of atanamayanlar41) {
                 const bosSehirler = sehirler.filter((s) => {
-                  const mevcut = atamalar[s] ? atamalar[s].length : 0;
                   const kont = kontenjanlar[s] || 0;
+                  const mevcut = atamalar[s]?.length || 0;
                   return kont > 0 && mevcut < kont;
                 });
+
                 if (bosSehirler.length > 0) {
                   const atanacakSehir =
                     bosSehirler[Math.floor(Math.random() * bosSehirler.length)];
