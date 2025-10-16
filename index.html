@@ -85,6 +85,7 @@
               >
               <input
                 type="number"
+                max="95"
                 id="siralama"
                 name="siralama"
                 class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 placeholder-gray-400"
@@ -294,7 +295,7 @@
 
         // Function to dynamically generate 40 preference select dropdowns
         function populateTercihler() {
-          const tercihContainer = document.getElementById("tercihler");
+          const tercihContainer = document.getElementById("tercihListesi");
           tercihContainer.innerHTML = "";
 
           for (let i = 1; i <= 40; i++) {
