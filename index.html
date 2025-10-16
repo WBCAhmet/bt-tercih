@@ -470,7 +470,7 @@
               for (const kullanici of siraliKullanicilar) {
                 let atandi = false;
 
-                for (const tercihSehir of (kullanici.tercihler || [])) {
+                for (const tercihSehir of kullanici.tercihler || []) {
                   const sehirKontenjani = kontenjanlar[tercihSehir] || 0;
                   const mevcutAtamaSayisi = atamalar[tercihSehir]?.length || 0;
 
@@ -480,7 +480,14 @@
                   // Atama yapılabilir
                   if (!atamalar[tercihSehir]) atamalar[tercihSehir] = [];
                   atamalar[tercihSehir].push(kullanici);
-                  sonucListesi.push({ kullanici, atandigiSehir: tercihSehir });
+                  const tercihIndex =
+                    kullanici.tercihler.indexOf(tercihSehir) + 1;
+                  sonucListesi.push({
+                    kullanici,
+                    atandigiSehir: tercihSehir,
+                    tercihSirasi: tercihIndex,
+                  });
+
                   atandi = true;
                   break;
                 }
@@ -511,6 +518,7 @@
                   sonucListesi.push({
                     kullanici,
                     atandigiSehir: atanacakSehir,
+                    tercihSirasi: 41,
                   });
                 } else {
                   const randomSehir =
@@ -572,6 +580,8 @@
                             <th scope="col" class="px-6 py-3">Ad Soyad</th>
                             <th scope="col" class="px-6 py-3">Sıralaması</th>
                             <th scope="col" class="px-6 py-3">Atandığı Şehir</th>
+                            <th scope="col" class="px-6 py-3">Kaçıncı Tercih</th>
+                            <th scope="col" class="px-6 py-3">İlk 5 Tercihi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -593,16 +603,111 @@
                         }">
                             ${sonuc.atandigiSehir}
                         </td>
+                        <td class="px-6 py-4">${sonuc.tercihSirasi || "-"}</td>
+<td class="px-6 py-4 text-gray-300">${(sonuc.kullanici.tercihler || [])
+              .slice(0, 5)
+              .join(", ")}</td>
+
                     </tr>
                 `;
           });
           tableHTML += "</tbody></table>";
           sonucTablosuDiv.innerHTML = tableHTML;
+          // 🔹 Ekstra butonlar
+          const actionButtons = document.createElement("div");
+          actionButtons.classList.add(
+            "flex",
+            "justify-center",
+            "gap-4",
+            "mt-6"
+          );
+
+          const excelBtn = document.createElement("button");
+          excelBtn.textContent = "Excel'e Aktar";
+          excelBtn.className =
+            "bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg transition-colors duration-200";
+
+          const chartBtn = document.createElement("button");
+          chartBtn.textContent = "Tercih Grafiğini Göster";
+          chartBtn.className =
+            "bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors duration-200";
+
+          excelBtn.addEventListener("click", () => exportToExcel(sonuclar));
+          chartBtn.addEventListener("click", () => showChart(sonuclar));
+
+          sonucTablosuDiv.appendChild(actionButtons);
+          actionButtons.appendChild(excelBtn);
+          actionButtons.appendChild(chartBtn);
+
           showToast("Atama işlemi tamamlandı!", "success");
         };
 
         // Initial call to generate the form
         populateTercihler();
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+      function exportToExcel(sonuclar) {
+        const data = sonuclar.map((s, i) => ({
+          "Sıra No": i + 1,
+          "Ad Soyad": s.kullanici.ad + " " + s.kullanici.soyad,
+          Sıralama: s.kullanici.siralama,
+          "Atandığı Şehir": s.atandigiSehir,
+          "Kaçıncı Tercih": s.tercihSirasi || "-",
+          "İlk 5 Tercih": (s.kullanici.tercihler || []).slice(0, 5).join(", "),
+        }));
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Atama Sonuçları");
+        XLSX.writeFile(wb, "AtamaSonuclari.xlsx");
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div
+      id="chartModal"
+      class="fixed inset-0 bg-black bg-opacity-70 hidden justify-center items-center"
+    >
+      <div class="bg-gray-800 p-6 rounded-xl w-3/4 max-w-3xl relative">
+        <button
+          id="closeChart"
+          class="absolute top-2 right-2 text-gray-400 hover:text-white"
+        >
+          X
+        </button>
+        <canvas id="tercihChart"></canvas>
+      </div>
+    </div>
+
+    <script>
+      function showChart(sonuclar) {
+        const allPrefs = {};
+        sonuclar.forEach((s) => {
+          (s.kullanici.tercihler || []).forEach((pref) => {
+            allPrefs[pref] = (allPrefs[pref] || 0) + 1;
+          });
+        });
+        const sorted = Object.entries(allPrefs)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10);
+        const labels = sorted.map((x) => x[0]);
+        const values = sorted.map((x) => x[1]);
+
+        const modal = document.getElementById("chartModal");
+        modal.classList.remove("hidden");
+        const ctx = document.getElementById("tercihChart").getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [{ label: "En Çok Tercih Edilen İller", data: values }],
+          },
+          options: { scales: { y: { beginAtZero: true } } },
+        });
+      }
+
+      document.getElementById("closeChart").addEventListener("click", () => {
+        document.getElementById("chartModal").classList.add("hidden");
       });
     </script>
   </body>
