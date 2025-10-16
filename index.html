@@ -301,7 +301,23 @@
           for (let i = 1; i <= 40; i++) {
             const select = document.createElement("select");
             select.name = `tercih${i}`;
-            select.classList.add("w-full", "p-2", "border", "rounded", "mb-2");
+            select.classList.add(
+              "bg-gray-700",
+              "border",
+              "border-gray-600",
+              "text-white",
+              "text-sm",
+              "rounded-lg",
+              "focus:ring-cyan-500",
+              "focus:border-cyan-500",
+              "block",
+              "w-full",
+              "p-2.5",
+              "placeholder-gray-400",
+              "transition-colors",
+              "duration-200",
+              "mb-2"
+            );
 
             const emptyOption = document.createElement("option");
             emptyOption.value = "";
@@ -454,7 +470,7 @@
               for (const kullanici of siraliKullanicilar) {
                 let atandi = false;
 
-                for (const tercihSehir of kullanici.tercihler) {
+                for (const tercihSehir of (kullanici.tercihler || [])) {
                   const sehirKontenjani = kontenjanlar[tercihSehir] || 0;
                   const mevcutAtamaSayisi = atamalar[tercihSehir]?.length || 0;
 
